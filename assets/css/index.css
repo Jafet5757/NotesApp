@@ -1,0 +1,32 @@
+nav {
+  background: #d3cce3; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #e9e4f0,
+    #d3cce3
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #e9e4f0,
+    #d3cce3
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.principal-image {
+  width: 80%;
+  height: auto;
+}
+
+/* Agrega la siguiente regla CSS a tu archivo de estilos */
+
+.btn-purple {
+  color: #fff;
+  background-color: #6b63ff; /* Puedes ajustar este color según tus preferencias */
+  border-color: #6b63ff; /* También puedes ajustar el color del borde si lo deseas */
+}
+
+.btn-purple:hover {
+  color: #fff;
+  background-color: #5a32a3; /* Cambia el color al pasar el ratón sobre el botón */
+  border-color: #5a32a3;
+}
