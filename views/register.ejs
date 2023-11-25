@@ -1,0 +1,30 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_nav') %>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md">
+      <div class="card">
+        <div class="card-header text-center">
+          <h4 class="title">Registrarme</h4>
+        </div>
+        <div class="card-body">
+          <label for="email">Correo electronico</label>
+          <input type="email" class="form-control mb-2" placeholder="example@email.com" name="email" id="email">
+          <label for="username" class="form-label">Nombre de usuario</label>
+          <input type="text" class="form-control mb-2" id="username" name="username" placeholder="">
+          <label for="password" class="form-label">Crear contraseña</label>
+          <input type="password" class="form-control mb-2" id="password" name="password">
+          <label for="password-confirm" class="formlabel">confirmar contraseña</label>
+          <input type="password" class="form-control" id="password-confirm" name="password-confirm">
+        </div>
+        <div class="card-footer text-center">
+          <button class="btn btn-purple w-100 my-2">Crear cuenta</button>
+          <a href="/login">iniciar sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/_footer') %>

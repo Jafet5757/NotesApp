@@ -18,4 +18,14 @@ router.get('/login', (req, res) => {
   res.render('login')
 })
 
+/**
+ * @name GET/register
+ * @description Render register view
+ * @path {GET} /register
+ * @response Render register view
+ */
+router.get('/register', (req, res) => {
+  res.render('register')
+})
+
 module.exports = router
