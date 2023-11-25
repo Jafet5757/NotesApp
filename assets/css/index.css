@@ -30,3 +30,14 @@ nav {
   background-color: #5a32a3; /* Cambia el color al pasar el ratón sobre el botón */
   border-color: #5a32a3;
 }
+
+.btn-outline-purple {
+  color: #6b63ff;
+  border-color: #6b63ff;
+}
+
+.btn-outline-purple:hover {
+  color: #fff;
+  background-color: #6b63ff;
+  border-color: #6b63ff;
+}

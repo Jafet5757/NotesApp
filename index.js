@@ -18,9 +18,8 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 //routes
-app.get('/', (req, res) => {
-  res.render('index')
-})
+const generalRoutes = require('./routes/general')
+app.use('/', generalRoutes)
 
 app.listen(app.get('port'), () => {
   console.log(`Server is running on port ${app.get('port')}`);
