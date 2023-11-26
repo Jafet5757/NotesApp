@@ -1,6 +1,14 @@
 const router = require('express').Router()
 const actions = require('../controllers/session')
 
+//Verifica si tene sesion activa
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next()
+  }
+  return res.redirect('/')
+}
+
 /**
  * @module routes/general
  * @description General routes
@@ -24,11 +32,23 @@ router.get('/login', (req, res) => {
  * @name POST/login
  * @description Login action
  * @path {POST} /login
- * @body {String} email
+ * @body {String} email - username
  * @body {String} password
  * @response error - Render login view
  */
 router.post('/login', actions.login)
+
+/**
+ * @name POST/login
+ * @description Login action
+ * @path {POST} /login
+ * @body {String} email
+ * @body {String} password
+ * @body {String} username
+ * @body {String} password-confirm
+ * @response error - Render login view
+ */
+router.post('/register', actions.register)
 
 /**
  * @name GET/register

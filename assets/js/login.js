@@ -1,26 +1,14 @@
-const createAccount = document.getElementById('createAccount')
+const loginButton = document.getElementById('login-button');
 
-//agregamos el evento submit al formulario
-createAccount.addEventListener('click', (e) => { 
+loginButton.addEventListener('click', (e) => { 
   e.preventDefault()
-  const email = document.getElementById('email').value
   const username = document.getElementById('username').value
   const password = document.getElementById('password').value
-  const confirmPassword = document.getElementById('password-confirm').value
-
-  if (password !== confirmPassword) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Las contraseñas no coinciden'
-    })
-    return
-  }
 
   //hacemos una petición a la ruta /login
-  fetch('/register', {
+  fetch('./login', {
     method: 'POST',
-    body: JSON.stringify({email, username, password}),
+    body: JSON.stringify({username, password}),
     headers: {
       'Content-Type': 'application/json'
     }
@@ -37,23 +25,20 @@ createAccount.addEventListener('click', (e) => {
       } else {
         Swal.fire({
           icon: 'success',
-          title: '¡Registro exitoso!',
+          title: '¡Login exitoso!',
           text: data.message
         })
         setTimeout(() => {
-          window.location.href = '/login'
-        }, 2000)
+          window.location.href = '/'
+        }, 500)
       }
     })
     .catch(err => {
-      console.log(err);
+      console.error(err);
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
         text: 'Ocurrió un error'
       })
-    })
-  
+  })
 })
-
-/* Swal.fire("SweetAlert2 is working!"); */
