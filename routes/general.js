@@ -1,4 +1,6 @@
 const router = require('express').Router()
+const actions = require('../controllers/session')
+
 /**
  * @module routes/general
  * @description General routes
@@ -17,6 +19,16 @@ router.get('/', (req, res) => {
 router.get('/login', (req, res) => {
   res.render('login')
 })
+
+/**
+ * @name POST/login
+ * @description Login action
+ * @path {POST} /login
+ * @body {String} email
+ * @body {String} password
+ * @response error - Render login view
+ */
+router.post('/login', actions.login)
 
 /**
  * @name GET/register
