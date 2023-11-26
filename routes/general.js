@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const passport = require('passport')
 const actions = require('../controllers/session')
 
 //Verifica si tene sesion activa
@@ -36,7 +37,11 @@ router.get('/login', (req, res) => {
  * @body {String} password
  * @response error - Render login view
  */
-router.post('/login', actions.login)
+router.post('/login', passport.authenticate('local-signin', {
+  successRedirect: '/home',
+  failureRedirect: '/login',
+  passReqToCallback: true
+}))
 
 /**
  * @name POST/login
@@ -58,6 +63,10 @@ router.post('/register', actions.register)
  */
 router.get('/register', (req, res) => {
   res.render('register')
+})
+
+router.get('/home', isAuthenticated, (req, res) => {
+  res.render('home', { user: req.user })
 })
 
 module.exports = router

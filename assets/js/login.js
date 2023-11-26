@@ -1,14 +1,14 @@
 const loginButton = document.getElementById('login-button');
 
-loginButton.addEventListener('click', (e) => { 
+/* loginButton.addEventListener('click', (e) => { 
   e.preventDefault()
-  const username = document.getElementById('username').value
+  const email = document.getElementById('email').value
   const password = document.getElementById('password').value
 
   //hacemos una petición a la ruta /login
   fetch('./login', {
     method: 'POST',
-    body: JSON.stringify({username, password}),
+    body: JSON.stringify({email, password}),
     headers: {
       'Content-Type': 'application/json'
     }
@@ -41,4 +41,4 @@ loginButton.addEventListener('click', (e) => {
         text: 'Ocurrió un error'
       })
   })
-})
+}) */
