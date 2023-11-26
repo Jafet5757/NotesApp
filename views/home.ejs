@@ -1,9 +1,18 @@
-<!-- FILEPATH: /C:/Users/Jafet/Documents/NotesApp/views/home.ejs -->
+<%- include('./partials/_header') %>
+<%- include('./partials/_nav') %>
 
-<div class="container">
-  <div class="row">
+<div class="container my-5">
+  <div class="row row-cols-1 row-cols-md-3 g-4">
     <div class="col">
-      Hola mundo
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Nota 1</h5>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat asperiores quae, maiores nihil sit adipisci. Sed consequatur, delectus, possimus quae laboriosam mollitia ratione sunt eos aspernatur nesciunt atque quasi dolor.
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+
+<%- include('./partials/_footer') %>
