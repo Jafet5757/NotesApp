@@ -44,6 +44,21 @@ router.post('/login', passport.authenticate('local-signin', {
 }))
 
 /**
+ * @name GET/logut
+ * @description Logout action
+ * @path {GET} /logout
+ * @response error - not load the server
+ */
+router.get('/logout', (req, res) => {
+  req.logout((err) =>{
+    if(err){
+      return next(err)
+    }
+    return res.redirect("/")
+  })
+})
+
+/**
  * @name POST/login
  * @description Login action
  * @path {POST} /login
