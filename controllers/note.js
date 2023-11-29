@@ -41,6 +41,12 @@ actions.createNote = async (req, res) => {
   }
 }
 
+/**
+ * Elimina una nota y comprueba que pertenezca al usuario
+ * @param {Object} req id de la nota y id del uuario
+ * @param {*} res 
+ * @returns menaje de confirmación
+ */
 actions.deleteNote = async (req, res) => { 
   const { noteId } = req.body
   const userId = req.user.id
@@ -55,6 +61,31 @@ actions.deleteNote = async (req, res) => {
     await Note.findByIdAndDelete(noteId)
     res.json({ message: 'Note deleted', error:false })
   } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: 'Ocurrió un error', error:true })
+  }
+}
+
+/**
+ * Busca una nota y la edita
+ * @param {Object} req id de la nota, titulo y cuerpo
+ * @param {*} res 
+ * @returns Menaje de confirmación
+ */
+actions.updateNote = async (req, res) => {
+  const { noteId, title, body } = req.body
+  const userId = req.user.id
+  try {
+    //Buscamos la nota
+    const note = await Note.findById(noteId)
+    //Verificamos que la nota exista y pertenezca al usuario
+    if(!note || note.user != userId){
+      return res.status(404).json({ message: 'Note not found', error:true })
+    }
+    //Editamos la nota
+    await Note.findByIdAndUpdate(noteId, { title, body })
+    return res.json({ message: 'Note edited', error:false })
+  }catch (error) {
     console.error(error)
     return res.status(500).json({ message: 'Ocurrió un error', error:true })
   }

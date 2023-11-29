@@ -17,7 +17,7 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal create -->
 <div class="modal fade" id="createNote-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -34,6 +34,29 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-purple" id="createNote-button">Crear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal edit -->
+<div class="modal fade" id="editNote-modal" tabindex="-1" aria-labelledby="editNote" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editNote">Editar nota</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btn-close-edit"></button>
+      </div>
+      <div class="modal-body">
+        <label for="title" class="form-label">Titulo de la nota</label>
+        <input type="text" name="title-edit" id="title-edit" class="form-control">
+        <label for="body" class="form-label">Nota:</label>
+        <textarea name="body-edit" id="body-edit" cols="30" rows="10" class="form-control"></textarea>
+        <input type="hidden" name="noteId-edit" id="noteId-edit">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-purple" id="editNote-button">Crear</button>
       </div>
     </div>
   </div>

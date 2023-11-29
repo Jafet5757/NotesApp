@@ -15,4 +15,6 @@ router.post('/create', isAuthenticated, actions.createNote)
 
 router.post('/delete', isAuthenticated, actions.deleteNote)
 
+router.post('/update', isAuthenticated, actions.updateNote)
+
 module.exports = router
