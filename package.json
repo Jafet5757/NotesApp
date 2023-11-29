@@ -8,6 +8,11 @@
     "start": "node .",
     "dev": "nodemon ."
   },
+  "nodemonConfig": {
+    "ignore": [
+      "assets/*"
+    ]
+  },
   "keywords": [],
   "author": "Jafet Orozco",
   "license": "ISC",

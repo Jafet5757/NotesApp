@@ -17,6 +17,14 @@ nav {
   height: auto;
 }
 
+.bg-purple {
+  background-color: #6b63ff;
+}
+
+.text-purple {
+  color: #6b63ff;
+}
+
 /* Agrega la siguiente regla CSS a tu archivo de estilos */
 
 .btn-purple {
@@ -26,6 +34,12 @@ nav {
 }
 
 .btn-purple:hover {
+  color: #fff;
+  background-color: #5a32a3; /* Cambia el color al pasar el ratón sobre el botón */
+  border-color: #5a32a3;
+}
+
+.btn-purple:focus{
   color: #fff;
   background-color: #5a32a3; /* Cambia el color al pasar el ratón sobre el botón */
   border-color: #5a32a3;

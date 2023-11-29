@@ -29,7 +29,9 @@ app.use(passport.session())
 
 //routes
 const generalRoutes = require('./routes/general')
+const notes = require('./routes/notes')
 app.use('/', generalRoutes)
+app.use('/notes', notes)
 
 app.listen(app.get('port'), () => {
   console.log(`Server is running on port ${app.get('port')}`);
