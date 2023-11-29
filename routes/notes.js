@@ -11,6 +11,8 @@ const isAuthenticated = (req, res, next) => {
 
 router.post('/get',isAuthenticated, actions.getNotesFromAuser)
 
-router.post('/create',isAuthenticated, actions.createNote)
+router.post('/create', isAuthenticated, actions.createNote)
+
+router.post('/delete', isAuthenticated, actions.deleteNote)
 
 module.exports = router
