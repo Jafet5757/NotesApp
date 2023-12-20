@@ -6,6 +6,8 @@ const { mongoose } = require('./db/connection')
 const session = require('express-session');
 const passport = require('passport');
 require('./local-auth');
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 
 //config
@@ -14,6 +16,21 @@ app.set("view engine", "ejs")
 app.set("views",path.join(__dirname,"views"))
 
 app.use(express.static(path.join(__dirname, "assets")))
+
+//Swagger
+const options = {
+  swaggerDefinition: {
+    openapi: '3.0.0', // Especifica la versión de OpenAPI aquí
+    info: {
+      title: 'Mi API',
+      version: '1.0.0',
+      description: 'Descripción de mi API',
+    },
+  },
+  apis: ['routes/*.js'], // Rutas de tus endpoints
+};
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(options)));
 
 //middleware
 app.use(express.urlencoded({ extended: false }))
