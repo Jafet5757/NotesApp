@@ -24,12 +24,13 @@ actions.getNotesFromAuser = async (req, res) => {
  * @returns Mensaje de confirmación
  */
 actions.createNote = async (req, res) => { 
-  const { title, body } = req.body
+  const { title, body, isPublic } = req.body
   try {
     const newNote = new Note({
       title,
       body,
-      user: req.user.id
+      user: req.user.id,
+      isPublic
     })
     await newNote.save()
     //Obtenemos su id para enviarlo al front
@@ -73,7 +74,7 @@ actions.deleteNote = async (req, res) => {
  * @returns Menaje de confirmación
  */
 actions.updateNote = async (req, res) => {
-  const { noteId, title, body } = req.body
+  const { noteId, title, body, isPublic } = req.body
   const userId = req.user.id
   try {
     //Buscamos la nota
@@ -83,7 +84,7 @@ actions.updateNote = async (req, res) => {
       return res.status(404).json({ message: 'Note not found', error:true })
     }
     //Editamos la nota
-    await Note.findByIdAndUpdate(noteId, { title, body })
+    await Note.findByIdAndUpdate(noteId, { title, body, isPublic })
     return res.json({ message: 'Note edited', error:false })
   }catch (error) {
     console.error(error)

@@ -30,6 +30,10 @@
         <input type="text" name="title" id="title" class="form-control">
         <label for="body" class="form-label">Nota:</label>
         <textarea name="body" id="body" cols="30" rows="10" class="form-control"></textarea>
+        <div class="form-check form-switch my-2">
+          <input class="form-check-input" type="checkbox" role="switch" id="isPublicCreate">
+          <label class="form-check-label" for="isPublicCreate">es publica</label>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -53,10 +57,14 @@
         <label for="body" class="form-label">Nota:</label>
         <textarea name="body-edit" id="body-edit" cols="30" rows="10" class="form-control"></textarea>
         <input type="hidden" name="noteId-edit" id="noteId-edit">
+        <div class="form-check form-switch my-2">
+          <input class="form-check-input" type="checkbox" role="switch" id="isPublicEdit">
+          <label class="form-check-label" for="isPublicEdit">es publica</label>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-purple" id="editNote-button">Crear</button>
+        <button type="button" class="btn btn-purple" id="editNote-button">Guardar cambios</button>
       </div>
     </div>
   </div>

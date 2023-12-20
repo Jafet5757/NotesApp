@@ -39,10 +39,11 @@ createNoteButton.addEventListener('click', () => {
   //obtenemos la data
   const title = document.querySelector('#title').value;
   const body = document.querySelector('#body').value;
+  const isPublic = document.querySelector('#isPublicCreate').checked;
   //hacemos la peticion fetch
   fetch('/notes/create', {
     method: 'POST',
-    body: JSON.stringify({title, body}),
+    body: JSON.stringify({title, body, isPublic}),
     headers: {
       'Content-Type': 'application/json'
     }
@@ -58,7 +59,8 @@ createNoteButton.addEventListener('click', () => {
       const note = {
         _id: data.noteId,
         title,
-        body
+        body,
+        isPublic
       }
       renderNotes([note])
     } else {
@@ -140,7 +142,7 @@ function renderNotes(notes) {
                 <p>${note.body}</p>
               </div>
               <div class="card-footer">
-                <button class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#editNote-modal" onclick="activateModal('${note._id}', '${note.body}', '${note.title}')"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#editNote-modal" onclick="activateModal('${note._id}', '${note.body}', '${note.title}', '${note.isPublic}')"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-outline-danger" onclick="deleteNote('${note._id}')"><i class="bi bi-trash"></i></button>
               </div>
             </div>
@@ -154,10 +156,11 @@ function renderNotes(notes) {
  * cargar en el modal los datos de la nota a editar
  * @param {String} noteId Id de la nota a editar
  */
-function activateModal(noteId, body, title) {
+function activateModal(noteId, body, title, isPublic) {
   document.querySelector('#title-edit').value = title;
   document.querySelector('#body-edit').value = body;
   document.querySelector('#noteId-edit').value = noteId;
+  document.querySelector('#isPublicEdit').checked = isPublic=='true'?true:false;
 }
 
 editNoteButton.addEventListener('click', () => { 
@@ -165,10 +168,11 @@ editNoteButton.addEventListener('click', () => {
   const title = document.querySelector('#title-edit').value;
   const body = document.querySelector('#body-edit').value;
   const noteId = document.querySelector('#noteId-edit').value;
+  const isPublic = document.querySelector('#isPublicEdit').checked;
   //hacemos la peticion fetch
   fetch('/notes/update', {
     method: 'POST',
-    body: JSON.stringify({title, body, noteId}),
+    body: JSON.stringify({title, body, noteId, isPublic}),
     headers: {
       'Content-Type': 'application/json'
     }
@@ -184,6 +188,7 @@ editNoteButton.addEventListener('click', () => {
       const note = document.getElementById(noteId)
       note.querySelector('.card-header h4').textContent = title
       note.querySelector('.card-body p').textContent = body
+      document.getElementById('isPublicEdit').checked = isPublic
       //cerramos el modal
       document.getElementById('btn-close-edit').click();
     } else {
