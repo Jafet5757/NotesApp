@@ -84,4 +84,8 @@ router.get('/home', isAuthenticated, (req, res) => {
   res.render('home', { user: req.user })
 })
 
+router.get('/publicNotes', (req, res) => {
+  res.render('publicNotes')
+})
+
 module.exports = router

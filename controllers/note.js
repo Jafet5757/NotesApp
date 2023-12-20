@@ -92,4 +92,20 @@ actions.updateNote = async (req, res) => {
   }
 }
 
+/**
+ * Obtiene todas las notas registradas donde sean publicas
+ * @param {object} req 
+ * @param {Object} res 
+ * @returns {Object} Notas
+ */
+actions.getPublicNotes = async (req, res) => {
+  try {
+    const notes = await Note.find({isPublic: true}).sort({date: 'desc'})
+    res.json({notes, error:false})
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: 'Ocurrió un error', error:true })
+  }
+}
+
 module.exports = actions

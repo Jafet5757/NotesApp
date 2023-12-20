@@ -131,4 +131,6 @@ router.post('/delete', isAuthenticated, actions.deleteNote)
  */
 router.post('/update', isAuthenticated, actions.updateNote)
 
+router.get('/public', actions.getPublicNotes)
+
 module.exports = router
