@@ -88,7 +88,7 @@ router.get('/publicNotes', (req, res) => {
   res.render('publicNotes')
 })
 
-router.get('/chat', (req, res) => { 
+router.get('/chat', isAuthenticated, (req, res) => { 
   res.render('chats')
 })
 
