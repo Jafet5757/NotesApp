@@ -88,4 +88,8 @@ router.get('/publicNotes', (req, res) => {
   res.render('publicNotes')
 })
 
+router.get('/chat', (req, res) => { 
+  res.render('chats')
+})
+
 module.exports = router

@@ -1,0 +1,40 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_nav', {login:true}) %>
+
+<style>
+  /*agregamos cursor de mando a la clase pointer*/
+  .pointer{
+    cursor: pointer;
+  }
+</style>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md">
+      <h3>Chats</h3>
+      <!-- Aquí se muestran todos los usuarios -->
+      <ul class="list-group pointer" id="list-users">
+        <li class="list-group-item">User</li>
+        <li class="list-group-item">User</li>
+        <li class="list-group-item">User</li>
+      </ul>
+    </div>
+    <div class="col-md">
+      <!-- Aquí se muestra la conversacion -->
+      <h3>Conversacion</h3>
+      <div class="card">
+        <div class="card-body">
+          <p class="card-text">Mensaje</p>
+        </div>
+      </div>
+      <div class="input-group my-3">
+        <span class="input-group-text" id="text-to-send"><i class="bi bi-send"></i></span>
+        <input type="text" class="form-control" placeholder="Hola..." aria-label="text" aria-describedby="text-to-send">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/chats.js"></script>
+
+<%- include('./partials/_footer') %>
