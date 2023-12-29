@@ -10,6 +10,13 @@ const isAuthenticated = (req, res, next) => {
   return res.redirect('/')
 }
 
+const isAuthenticatedForLogin = (req, res, next) => { 
+  if (req.isAuthenticated()) {
+    return res.redirect('/home')
+  }
+  return next()
+}
+
 /**
  * @module routes/general
  * @description General routes
@@ -25,7 +32,7 @@ router.get('/', (req, res) => {
  * @path {GET} /login
  * @response Render login view
  */
-router.get('/login', (req, res) => {
+router.get('/login',isAuthenticatedForLogin, (req, res) => {
   res.render('login')
 })
 

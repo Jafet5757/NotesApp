@@ -42,7 +42,7 @@ const socket = io();
 
 const thisUserMessage = (message) => {
   return `<div class="d-flex justify-content-end my-1">
-            <div class="card bg-primary text-white">
+            <div class="card bg-purple text-white">
               <div class="card-body">
                 <p class="card-text">${message}</p>
               </div>
