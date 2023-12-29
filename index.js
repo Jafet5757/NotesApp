@@ -8,6 +8,14 @@ const passport = require('passport');
 require('./local-auth');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const { v4: uuidv4 } = require('uuid');
+//socket config
+const { createServer } = require('node:http');
+const { join } = require('node:path');
+const { Server } = require('socket.io');
+
+const server = createServer(app);
+const io = new Server(server);
 
 
 //config
@@ -52,6 +60,57 @@ app.use('/', generalRoutes)
 app.use('/notes', notes)
 app.use('/chat', chat)
 
-app.listen(app.get('port'), () => {
+// Base de datos para el socket
+const Message = require('./db/models/message')
+
+//sockets
+io.on('connection', (socket) => {
+  console.log('a user connected');
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+
+  // Un usuario se une a una sala
+  socket.on('room:join', async (data) => {
+    try {
+      console.log('room:join', data);
+      // Buscamos si ya hay algún registro de conversación entre los dos usuarios y creamos uno nuevo si no existe
+      const conversation = await Message.findOneAndUpdate(
+        {
+          $or: [
+            { sender: data.id, receiver: data.userId },
+            { sender: data.userId, receiver: data.id },
+          ],
+        },
+        {
+          $setOnInsert: {
+            sender: data.id,
+            receiver: data.userId,
+            message: 'Hi!',
+            conversation: uuidv4(),
+          },
+        },
+        { upsert: true, new: true }
+      );
+
+      // Nos unimos a la sala
+      socket.join(conversation.conversation);
+      // Emitimos un evento para que el cliente sepa que se unió a la sala
+      socket.to(conversation.conversation).emit('room:joined', conversation.conversation);
+    } catch (error) {
+      console.error('Error en room:join', error);
+    }
+  });
+
+  // Un usuario envía un mensaje
+  socket.on('message:send', async (data) => { 
+    console.log('message:send', data);
+    // Emitimos el mensaje a la sala excepto al usuario que lo envió
+    socket.to(data.conversation).emit('message:sent', data);
+  });
+
+});
+
+server.listen(app.get('port'), () => {
   console.log(`Server is running on port ${app.get('port')}`);
 });

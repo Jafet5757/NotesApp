@@ -1,8 +1,21 @@
+const principalCard = document.getElementById('principal-card-messages')
+const socket = io();
+
+
 (() => {
   // Hacemos una peticion fetch para obtener todos los usuasrios
   fetch('/chat/users')
     .then(response => response.json())
     .then(data => {
+      // Si hay un error se muestra un mensaje
+      if (data.error) {
+        return Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: data.message
+        })
+      }
+      // Obtenemos la lista de usuarios
       const listUsers = document.getElementById('list-users')
       // Limpia la lista de usuarios
       listUsers.innerHTML = ''
@@ -28,7 +41,7 @@
 })()
 
 const thisUserMessage = (message) => {
-  return `<div class="d-flex justify-content-end">
+  return `<div class="d-flex justify-content-end my-1">
             <div class="card bg-primary text-white">
               <div class="card-body">
                 <p class="card-text">${message}</p>
@@ -37,7 +50,7 @@ const thisUserMessage = (message) => {
           </div>`}
 
 const otherUserMessage = (message) => {
-  return `<div class="d-flex justify-content-start">
+  return `<div class="d-flex justify-content-start my-1">
             <div class="card bg-secondary text-white">
               <div class="card-body">
                 <p class="card-text">${message}</p>
@@ -61,6 +74,14 @@ function loadConversation(userId) {
   })
     .then(response => response.json())
     .then(data => {
+      // Si hay un error se muestra un mensaje
+      if (data.error) {
+        return Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: data.message
+        })
+      }
       // Limpiamos los mensajes
       messagesCard.innerHTML = ''
       // Recorremos los mensajes y los agregamos a la lista
@@ -75,9 +96,10 @@ function loadConversation(userId) {
       })
       // Agregamos userId al input hidden
       document.getElementById('userId').value = userId
-      const principalCard = document.getElementById('principal-card-messages')
       // Baja el scroll hasta el final
       principalCard.scrollTop = principalCard.scrollHeight;
+      // Nos unimos a la sala
+      joinRoom(userId)
     })
     .catch(err => {
       console.error(err)
@@ -98,6 +120,28 @@ message.addEventListener('keyup', (event) => {
       console.log('Enter')
     }
 });
+
+/**
+ * Hace una peticion mediante el socket para unirse a una sala mandando el id del usuario logueado y el id del usuario con el que se quiere obtener la conversación
+ * @param {String} userId Id del usuario con el que se quiere obtener la conversación
+ */
+function joinRoom(userId) {
+  // Hacemos una peticion a /id para obtener el id del usuario logueado
+  fetch('/id')
+    .then(response => response.json())
+    .then(data => {
+      // Nos unimos a la sala
+      socket.emit('room:join', {userId, id: data.id})
+    })
+    .catch(err => {
+      console.error(err)
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Algo salió mal al cargar la sala'
+      })
+    })
+}
 
 function sendMessage() {
   // Obtenemos el id del usuario
@@ -120,6 +164,16 @@ function sendMessage() {
         const messagesCard = document.getElementById('messages-card')
         messagesCard.innerHTML += thisUserMessage(message)
         document.getElementById('text-messageToSend').value = ''
+        // Baja el scroll hasta el final
+        principalCard.scrollTop = principalCard.scrollHeight;
+        // Emitimos el mensaje a la sala
+        emitMessage(message, userId)
+      }else{
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: data.message
+        })
       }
     })
     .catch(err => {
@@ -130,4 +184,58 @@ function sendMessage() {
         text: 'Algo salió mal'
       })
     })
+    .catch(err => {
+      console.error(err)
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Algo salió mal al enviar el mensaje'
+      })
+    })
 }
+
+/**
+ * Emite un mensaje mediante el socket a la sala
+ * @param {String} message 	Mensajes que queremos enviar
+ * @param {String} userId Id del otro usuario que participa en la conversasion
+ */
+function emitMessage(message, userId) {
+  // Hacemos una peticion a /id para obtener el id del usuario logueado
+  fetch('/id')
+    .then(response => response.json())
+    .then(data => {
+      messageContent = {
+        userId,
+        id: data.id,
+        message,
+        conversation: sessionStorage.getItem('room')
+      }
+      console.log('message:send', messageContent)
+      // Emitimos el mensaje a la sala
+      socket.emit('message:send', messageContent)
+    })
+    .catch(err => {
+      console.error(err)
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Algo salió mal al enviar el mensaje'
+      })
+    })
+}
+
+// Eventos del socket
+socket.on('room:joined', (room) => {
+  console.log('room:joined', room)
+  // Lo guardamos en el session storage
+  sessionStorage.setItem('room', room)
+})
+
+socket.on('message:sent', (data) => { 
+  console.log('message:sent', data)
+  // Agrega el mensaje a la lista
+  const messagesCard = document.getElementById('messages-card')
+  messagesCard.innerHTML += otherUserMessage(data.message)
+  // Baja el scroll hasta el final
+  principalCard.scrollTop = principalCard.scrollHeight;
+})

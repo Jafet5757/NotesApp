@@ -92,4 +92,8 @@ router.get('/chat', isAuthenticated, (req, res) => {
   res.render('chats')
 })
 
+router.get('/id', isAuthenticated, (req, res) => { 
+  res.json({id: req.user.id})
+})
+
 module.exports = router
