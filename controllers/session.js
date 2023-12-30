@@ -188,4 +188,44 @@ function generateNumbers() {
   return numbers
 }
 
+actions.changePassword = async (req, res) => { 
+  const { password, passwordConfirm } = req.body
+
+  // Validamos que los campos no estén vacíos
+  if (!password || !passwordConfirm) {
+    return res.json({
+      error: true,
+      message: 'Todos los campos son requeridos'
+    })
+  }
+
+  // Validamos que las contraseñas coincidan
+  if (password !== passwordConfirm) {
+    return res.json({
+      error: true,
+      message: 'Las contraseñas no coinciden'
+    })
+  }
+
+  // Actualizamos la contraseña
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    const user = await User.findById(req.user.id);
+    user.password = hash;
+    await user.save();
+
+    return res.json({
+      error: false,
+      message: 'Contraseña actualizada'
+    })
+  } catch (err) {
+    console.error(err)
+    return res.json({
+      error: true,
+      message: 'Ocurrió un error al actualizar la contraseña'
+    })
+  }
+}
+
 module.exports = actions

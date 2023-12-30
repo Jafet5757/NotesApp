@@ -111,4 +111,10 @@ router.post('/recoverAccount', actions.recoverAccount)
 
 router.post('/verifyCode', actions.verifyCode)
 
+router.get('/profile', isAuthenticated, (req, res) => { 
+  res.render('profile')
+})
+
+router.post('/changePassword', actions.changePassword)
+
 module.exports = router
