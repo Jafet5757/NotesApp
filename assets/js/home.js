@@ -176,7 +176,7 @@ function activateModal(noteId, body, title, isPublic) {
   document.querySelector('#title-edit').value = title;
   simplEdited.value(body);
   document.querySelector('#noteId-edit').value = noteId;
-  document.querySelector('#isPublicEdit').checked = isPublic=='true'?true:false;
+  document.querySelector('#isPublicEdit').checked = !!isPublic?true:false;
 }
 
 editNoteButton.addEventListener('click', () => { 

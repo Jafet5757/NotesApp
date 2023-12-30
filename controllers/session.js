@@ -1,5 +1,10 @@
 const User = require('../db/models/user')
+const Token = require('../db/models/token')
+const nodeMailer = require('nodemailer')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 actions = {}
+const SECRET_KEY = '^Gm^j!a!Wr$6cG6f5UnchKS'
 
 /**
  * registra un nuevo usuario en la bd
@@ -66,6 +71,121 @@ actions.login = async(req, res) => {
       message: 'Contraseña incorrecta'
     })
   }
+}
+
+const transporter = nodeMailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'jafetkevin575@gmail.com',
+    pass: 'rooo fvjp rpnf aysc'
+  }
+})
+
+/**
+ * Envia un correo con un código de recuperación después de verificar que el correo existe
+ * @param {Object} req email al cual enviaremos el codigo de recuperación
+ * @param {Object} res 
+ * @returns Mensaje de error o de éxito
+ */
+actions.recoverAccount = async (req, res) => { 
+  const { email } = req.body
+
+  // Buscamos el correo en la bd
+  try {
+    exist = await User.findOne({ email })
+    if (exist) {
+      // Generamos los números aleatorios
+      const numbers = generateNumbers();
+
+      // Creamos el token con una expiración de 1 hora
+      const token = jwt.sign({ numbers }, SECRET_KEY, { expiresIn: '1h' });
+
+      // Creamos el objeto token
+      const newToken = new Token({ token, email });
+      await newToken.save();
+
+      // Enviamos el código al correo
+      const mailOptions = {
+        from: 'jafetkevin575@gmail.com',
+        to: email,
+        subject: 'Recuperación de cuenta',
+        text: `Tu código de recuperación es ${numbers}`
+      }
+      
+      const info = await transporter.sendMail(mailOptions)
+
+      return res.json({
+        error: false,
+        message: 'Correo enviado'
+      })
+    }
+  } catch (err) {
+    console.error(err)
+    return res.json({
+      error: true,
+      message: 'Ocurrió un error al enviar el correo'
+    })
+  }
+}
+
+actions.verifyCode = async (req, res) => { 
+  const { email, code } = req.body
+  
+  try {
+    // Buscamos el token en la bd
+    tokenRecovered = await Token.findOne({ email, valid: true })
+    if (tokenRecovered) {
+      // Verificamos que el código sea correcto
+      const verify = jwt.verify(tokenRecovered.token, SECRET_KEY)
+      if (verify.numbers === code) {
+        // Desactivamos el token
+        tokenRecovered.valid = false
+        await tokenRecovered.save()
+
+        // Generamos el hash del email
+        const newPass = generateNumbers()
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(newPass, salt);
+
+        // Actualizamos la contraseña
+        const user = await User.findOne({ email });
+        user.password = hash;
+        await user.save();
+
+        return res.json({
+          error: false,
+          message: 'Código correcto',
+          valid: true,
+          newPass
+        })
+      }
+    }
+    // Actualizamos todos los tokens a false
+    await Token.updateMany({ email }, { valid: false })
+
+    return res.json({
+      error: true,
+      message: 'Código incorrecto',
+      valid: false
+    })
+  } catch (err) {
+    // Actualizamos todos los tokens a false
+    await Token.updateMany({ email }, { valid: false })
+    console.error(err)
+    return res.json({
+      error: true,
+      message: 'Ocurrió un error al comprobar el código'
+    })
+  }
+}
+
+function generateNumbers() {
+  // Genera 4 numeros aleatorios
+  let numbers = ''
+  for (let i = 0; i < 4; i++) {
+    numbers += Math.floor(Math.random() * 10)
+  }
+  return numbers
 }
 
 module.exports = actions

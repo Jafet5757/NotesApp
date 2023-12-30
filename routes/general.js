@@ -103,4 +103,12 @@ router.get('/id', isAuthenticated, (req, res) => {
   res.json({id: req.user.id})
 })
 
+router.get('/recoverAccount', (req, res) => { 
+  res.render('recoverAccount')
+})
+
+router.post('/recoverAccount', actions.recoverAccount)
+
+router.post('/verifyCode', actions.verifyCode)
+
 module.exports = router
