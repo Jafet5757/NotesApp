@@ -1,6 +1,16 @@
 const createNoteButton = document.querySelector('#createNote-button');
 const editNoteButton = document.querySelector('#editNote-button');
 
+// Preparamos los textarea con MarkDown
+const simpl = new SimpleMDE({
+  element: document.getElementById("body"),
+  spellChecker: false,
+});
+const simplEdited = new SimpleMDE({
+  element: document.getElementById("body-edit"),
+  spellChecker: false,
+});
+
 const getNotes = () => { 
   fetch('/notes/get', {
     method: 'POST',
@@ -38,7 +48,7 @@ getNotes()
 createNoteButton.addEventListener('click', () => { 
   //obtenemos la data
   const title = document.querySelector('#title').value;
-  const body = document.querySelector('#body').value;
+  const body = simpl.value();
   const isPublic = document.querySelector('#isPublicCreate').checked;
   //hacemos la peticion fetch
   fetch('/notes/create', {
@@ -139,17 +149,23 @@ function renderNotes(notes) {
                 <h4>${note.title}</h4>
               </div>
               <div class="card-body">
-                <p>${note.body}</p>
+                ${marked.parse(note.body)}
               </div>
               <div class="card-footer">
-                <button class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#editNote-modal" onclick="activateModal('${note._id}', '${note.body}', '${note.title}', '${note.isPublic}')"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-purple" data-bs-toggle="modal" data-bs-target="#editNote-modal" id="${'edit'+note._id}"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-outline-danger" onclick="deleteNote('${note._id}')"><i class="bi bi-trash"></i></button>
               </div>
             </div>
           </div>
         `
       })
-      document.querySelector('#notes-container').innerHTML += template
+  document.querySelector('#notes-container').innerHTML += template
+  //agregamos los eventos a los botones de editar
+  notes.forEach(note => {
+    document.querySelector(`#${'edit'+note._id}`).addEventListener('click', () => {
+      activateModal(note._id, note.body, note.title, note.isPublic)
+    })
+  })
 }
 
 /**
@@ -158,7 +174,7 @@ function renderNotes(notes) {
  */
 function activateModal(noteId, body, title, isPublic) {
   document.querySelector('#title-edit').value = title;
-  document.querySelector('#body-edit').value = body;
+  simplEdited.value(body);
   document.querySelector('#noteId-edit').value = noteId;
   document.querySelector('#isPublicEdit').checked = isPublic=='true'?true:false;
 }
@@ -166,7 +182,7 @@ function activateModal(noteId, body, title, isPublic) {
 editNoteButton.addEventListener('click', () => { 
   //obtenemos la data
   const title = document.querySelector('#title-edit').value;
-  const body = document.querySelector('#body-edit').value;
+  const body = simplEdited.value();
   const noteId = document.querySelector('#noteId-edit').value;
   const isPublic = document.querySelector('#isPublicEdit').checked;
   //hacemos la peticion fetch
@@ -187,7 +203,7 @@ editNoteButton.addEventListener('click', () => {
       //editamos la nota en el dom
       const note = document.getElementById(noteId)
       note.querySelector('.card-header h4').textContent = title
-      note.querySelector('.card-body p').textContent = body
+      note.querySelector('.card-body p').innerHTML = marked.parse(body)
       document.getElementById('isPublicEdit').checked = isPublic
       //cerramos el modal
       document.getElementById('btn-close-edit').click();

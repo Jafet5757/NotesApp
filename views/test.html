@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- Agrega esto en la sección head de tu HTML -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+
+</head>
+<body>
+  <div>
+    <textarea id="markdown-textarea"></textarea>
+</div>
+
+</body>
+<script>
+    var simplemde = new SimpleMDE({
+        element: document.getElementById("markdown-textarea"),
+        spellChecker: false,  // Opcional: desactiva el corrector ortográfico
+    });
+
+    // Para recuperar el contenido del editor:
+    /* var contenidoMarkdown = simplemde.value();
+    console.log(contenidoMarkdown); */
+</script>
+
+</html>
