@@ -12,7 +12,7 @@ function renderNotes(notes) {
                 <h4>${note.title}</h4>
               </div>
               <div class="card-body">
-                <p>${note.body}</p>
+                ${marked.parse(note.body)}
               </div>
               <div class="card-footer">
               </div>
