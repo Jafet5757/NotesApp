@@ -1,4 +1,5 @@
 const Note = require('../db/models/note')
+const Tag = require('../db/models/tag')
 actions = {}
 
 /**
@@ -9,7 +10,7 @@ actions = {}
  */
 actions.getNotesFromAuser = async (req, res) => {
   try {
-    const notes = await Note.find({user: req.user.id}).sort({date: 'desc'})
+    const notes = await Note.find({ user: req.user.id }).sort({ date: 'desc' })
     res.json({notes, error:false})
   } catch (error) {
     console.error(error)
@@ -23,13 +24,27 @@ actions.getNotesFromAuser = async (req, res) => {
  * @param {*} res 
  * @returns Mensaje de confirmación
  */
-actions.createNote = async (req, res) => { 
-  const { title, body, isPublic } = req.body
+actions.createNote = async (req, res) => {
+  const { title, body, isPublic, tags } = req.body
   try {
+    //Separamos la cadena tags en un array separado por comas
+    const tagsArray = tags.split(',')
+    const tagsIds = []
+    //Creamos la nueva nota
+    for (let tag of tagsArray) { 
+      const newTag = new Tag({
+        tag: tag.trim(),
+        user: req.user.id
+      })
+      await newTag.save()
+      tagsIds.push({id: newTag._id, tag: newTag.tag, color: newTag.color})
+    }
+
     const newNote = new Note({
       title,
       body,
       user: req.user.id,
+      tags: tagsIds,
       isPublic
     })
     await newNote.save()

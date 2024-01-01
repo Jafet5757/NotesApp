@@ -42,6 +42,17 @@ const getNotes = () => {
 }
 getNotes()
 
+function stringTagsToObjects(tags, color = 'purple') {
+  const tagsArray = tags.split(',')
+  const tagsObjects = []
+  for(let tag of tagsArray){
+    tag = tag.trim()
+    tag = { tag, color }
+    tagsObjects.push(tag)
+  }
+  return tagsObjects
+}
+
 /**
  * Obtiene las notas de un usuario especifico con su id
  */
@@ -50,10 +61,19 @@ createNoteButton.addEventListener('click', () => {
   const title = document.querySelector('#title').value;
   const body = simpl.value();
   const isPublic = document.querySelector('#isPublicCreate').checked;
+  const tags = document.querySelector('#tags').value;
+  //validamos los campos
+  if(!title || !body || !tags){
+    return Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Todos los campos son obligatorios y solo se permiten letras y números'
+    })  
+  }
   //hacemos la peticion fetch
   fetch('/notes/create', {
     method: 'POST',
-    body: JSON.stringify({title, body, isPublic}),
+    body: JSON.stringify({title, body, isPublic, tags}),
     headers: {
       'Content-Type': 'application/json'
     }
@@ -70,7 +90,8 @@ createNoteButton.addEventListener('click', () => {
         _id: data.noteId,
         title,
         body,
-        isPublic
+        isPublic,
+        tags: stringTagsToObjects(tags, 'purple')
       }
       renderNotes([note])
     } else {
@@ -140,13 +161,22 @@ function deleteNote(noteId) {
  * @param {Array} notes Arreglo con las notas que son objetos
  */
 function renderNotes(notes) {
+  console.log(notes)
   let template = ''
-      notes.forEach(note => {
+  notes.forEach(note => {
+    //Preparamos las etiquetas
+    let tags = ''
+    note.tags.forEach(tag => {
+      tags += `<span class="mx-1 badge bg-${tag.color}">${tag.tag}</span>`
+    })
         template += `
           <div class="col" id="${note._id}">
             <div class="card note-card" style="height:100%">
               <div class="card-header">
                 <h4>${note.title}</h4>
+                <div class="tags">
+                  ${tags}
+                </div>
               </div>
               <div class="card-body">
                 ${marked.parse(note.body)}
