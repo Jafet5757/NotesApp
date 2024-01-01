@@ -37,7 +37,7 @@ actions.createNote = async (req, res) => {
         user: req.user.id
       })
       await newTag.save()
-      tagsIds.push({id: newTag._id, tag: newTag.tag, color: newTag.color})
+      tagsIds.push({_id: newTag._id, tag: newTag.tag, color: newTag.color})
     }
 
     const newNote = new Note({
@@ -75,6 +75,8 @@ actions.deleteNote = async (req, res) => {
     }
     //Eliminamos la nota
     await Note.findByIdAndDelete(noteId)
+    //Eliminamos las etiquetas de esa nota
+    await Tag.deleteMany({ _id: { $in: note.tags } })
     res.json({ message: 'Note deleted', error:false })
   } catch (error) {
     console.error(error)

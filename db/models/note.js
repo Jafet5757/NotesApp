@@ -7,7 +7,7 @@ const noteSchema = new Schema({
   body: {type: String, required: true},
   date: {type: Date, default: Date.now},
   user: { type: String },
-  tags: { type: Array },
+  tags: { type: Array },//[{_id: newTag._id, tag: newTag.tag, color: newTag.color}]
   isPublic: {type: Boolean, default: false}
 })
 
