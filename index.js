@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
   socket.on('message:send', async (data) => { 
     console.log('message:send', data);
     // Emitimos el mensaje a la sala excepto al usuario que lo envió
-    socket.to(data.conversation).emit('message:sent', data);
+    socket.broadcast.to(data.conversation).emit('message:sent', data);
   });
 
 });

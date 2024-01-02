@@ -179,9 +179,10 @@ function sendMessage() {
         // Se agrega el mensaje a la lista
         const messagesCard = document.getElementById('messages-card')
         messagesCard.innerHTML += thisUserMessage(message)
-        document.getElementById('text-messageToSend').value = ''
         // Baja el scroll hasta el final
         principalCard.scrollTop = principalCard.scrollHeight;
+        // Se limpia el input
+        document.getElementById('text-messageToSend').value = ''
         // Emitimos el mensaje a la sala
         emitMessage(message, userId)
       }else{
@@ -249,9 +250,13 @@ socket.on('room:joined', (room) => {
 
 socket.on('message:sent', (data) => { 
   console.log('message:sent', data)
-  // Agrega el mensaje a la lista
-  const messagesCard = document.getElementById('messages-card')
-  messagesCard.innerHTML += otherUserMessage(data.message)
-  // Baja el scroll hasta el final
-  principalCard.scrollTop = principalCard.scrollHeight;
+  if(data.userId !== document.getElementById('userId').value) {
+    // Agrega el mensaje a la lista
+    const messagesCard = document.getElementById('messages-card')
+    messagesCard.innerHTML += otherUserMessage(data.message)
+    // Baja el scroll hasta el final
+    principalCard.scrollTop = principalCard.scrollHeight;
+  } else {
+    // No hace nada porque el mensaje ya se agregó (lo envió el usuario logueado)
+  }
 })
