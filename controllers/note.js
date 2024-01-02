@@ -91,7 +91,7 @@ actions.deleteNote = async (req, res) => {
  * @returns Menaje de confirmación
  */
 actions.updateNote = async (req, res) => {
-  const { noteId, title, body, isPublic } = req.body
+  const { noteId, title, body, isPublic, tags } = req.body
   const userId = req.user.id
   try {
     //Buscamos la nota
@@ -100,8 +100,22 @@ actions.updateNote = async (req, res) => {
     if(!note || note.user != userId){
       return res.status(404).json({ message: 'Note not found', error:true })
     }
+    //Eliminamos las etiquetas de esa nota
+    const del = await Tag.deleteMany({ _id: { $in: note.tags } })
+    //Separamos la cadena tags en un array separado por comas
+    const tagsArray = tags.split(',')
+    //Creamos las nuevas etiquetas
+    const tagsIds = []
+    for (let tag of tagsArray) { 
+      const newTag = new Tag({
+        tag: tag.trim(),
+        user: req.user.id
+      })
+      await newTag.save()
+      tagsIds.push({_id: newTag._id, tag: newTag.tag, color: newTag.color})
+    }
     //Editamos la nota
-    await Note.findByIdAndUpdate(noteId, { title, body, isPublic })
+    await Note.findByIdAndUpdate(noteId, { title, body, isPublic, tags: tagsIds })
     return res.json({ message: 'Note edited', error:false })
   }catch (error) {
     console.error(error)

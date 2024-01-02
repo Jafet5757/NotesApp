@@ -10,7 +10,7 @@
 
 <div class="container my-5">
   <div class="row row-cols-1 row-cols-md-3 g-4" id="notes-container">
-    <div class="col">
+    <div class="col" id="col-create-card">
       <div class="card text-center" id="create-card" data-bs-toggle="modal" data-bs-target="#createNote-modal">
         <div class="card-body">
           <h3 class="card-title">Crear nota</h3>
@@ -61,6 +61,8 @@
       <div class="modal-body">
         <label for="title" class="form-label">Titulo de la nota</label>
         <input type="text" name="title-edit" id="title-edit" class="form-control">
+        <label for="tags-edit" class="form-label">Etiquetas</label>
+        <input type="text" class="form-control" placeholder="importante, urgente, necesario" id="tags-edit">
         <label for="body" class="form-label">Nota:</label>
         <textarea name="body-edit" id="body-edit" cols="30" rows="10" class="form-control"></textarea>
         <input type="hidden" name="noteId-edit" id="noteId-edit">

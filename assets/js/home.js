@@ -193,7 +193,7 @@ function renderNotes(notes) {
   //agregamos los eventos a los botones de editar
   notes.forEach(note => {
     document.querySelector(`#${'edit'+note._id}`).addEventListener('click', () => {
-      activateModal(note._id, note.body, note.title, note.isPublic)
+      activateModal(note._id, note.body, note.title, note.isPublic, note.tags)
     })
   })
 }
@@ -202,9 +202,17 @@ function renderNotes(notes) {
  * cargar en el modal los datos de la nota a editar
  * @param {String} noteId Id de la nota a editar
  */
-function activateModal(noteId, body, title, isPublic) {
+function activateModal(noteId, body, title, isPublic, tags) {
   document.querySelector('#title-edit').value = title;
   simplEdited.value(body);
+  // Transformamos el array de objetos a un string
+  let tagsString = ''
+  tags.forEach(tag => {
+    tagsString += tag.tag + ', '
+  })
+  // Eliminamos la ultima coma
+  tagsString = tagsString.slice(0, -2)
+  document.querySelector('#tags-edit').value = tagsString;
   document.querySelector('#noteId-edit').value = noteId;
   document.querySelector('#isPublicEdit').checked = !!isPublic?true:false;
 }
@@ -215,10 +223,11 @@ editNoteButton.addEventListener('click', () => {
   const body = simplEdited.value();
   const noteId = document.querySelector('#noteId-edit').value;
   const isPublic = document.querySelector('#isPublicEdit').checked;
+  const tags = document.querySelector('#tags-edit').value;
   //hacemos la peticion fetch
   fetch('/notes/update', {
     method: 'POST',
-    body: JSON.stringify({title, body, noteId, isPublic}),
+    body: JSON.stringify({title, body, noteId, isPublic, tags}),
     headers: {
       'Content-Type': 'application/json'
     }
@@ -230,11 +239,14 @@ editNoteButton.addEventListener('click', () => {
         title: 'Editada correctamente',
         text: 'La nota se editó correctamente'
       })  
-      //editamos la nota en el dom
-      const note = document.getElementById(noteId)
-      note.querySelector('.card-header h4').textContent = title
-      note.querySelector('.card-body p').innerHTML = marked.parse(body)
-      document.getElementById('isPublicEdit').checked = isPublic
+      // Extraemos la create card col
+      const createCard = document.getElementById('col-create-card')
+      // Limpiamos el dom
+      document.querySelector('#notes-container').innerHTML = ''
+      // Agregamos la create card col
+      document.querySelector('#notes-container').appendChild(createCard)
+      // Obtenemos las notas
+      getNotes()
       //cerramos el modal
       document.getElementById('btn-close-edit').click();
     } else {
