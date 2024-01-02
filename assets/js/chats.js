@@ -126,19 +126,35 @@ message.addEventListener('keyup', (event) => {
  * @param {String} userId Id del usuario con el que se quiere obtener la conversación
  */
 function joinRoom(userId) {
-  // Hacemos una peticion a /id para obtener el id del usuario logueado
-  fetch('/id')
+  // Hacemos una peticion a /join para unirnos a la sala
+  fetch('/chat/join-room', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ userId })
+  })
     .then(response => response.json())
     .then(data => {
-      // Nos unimos a la sala
-      socket.emit('room:join', {userId, id: data.id})
+      // Si hay un error se muestra un mensaje
+      if (data.error) {
+        return Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: data.message
+        })
+      }
+      // Emitimos un evento para que el cliente sepa a que sala se unió
+      socket.emit('room:join', data)
+      // Guardamos el id de la sala en el session storage
+      sessionStorage.setItem('room', data.conversation)
     })
     .catch(err => {
       console.error(err)
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Algo salió mal al cargar la sala'
+        text: 'Algo salió mal'
       })
     })
 }

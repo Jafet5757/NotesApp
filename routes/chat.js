@@ -12,5 +12,6 @@ const isAuthenticated = (req, res, next) => {
 router.get('/users', isAuthenticated, chat.getUsers)
 router.post('/messages', isAuthenticated, chat.getMessages)
 router.post('/send-message', isAuthenticated, chat.sendMessage)
+router.post('/join-room', isAuthenticated, chat.joinRoom)
 
 module.exports = router

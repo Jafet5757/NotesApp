@@ -52,8 +52,8 @@ actions.sendMessage = async (req, res) => {
   const { userId, message } = req.body
   const { id } = req.user
   try {
-    // Verificamos que el mensaje no esté vacio y sean caracteres simples con una expresion regular
-    if (!message || !message.match(/^[a-zA-Z0-9 ]*$/)) {
+    // Verificamos que el mensaje no esté vacio
+    if (!message) {
       return res.json({ message: 'El mensaje no es válido', error:true })
     }
     // Buscamos si ya hay algún registro de conversación entre los dos usuarios
@@ -74,6 +74,37 @@ actions.sendMessage = async (req, res) => {
     return res.json({error:false})
   } catch (error) {
     console.error(error)
+    return res.json({ message: 'Ocurrió un error inseperado', error:true })
+  }
+}
+
+actions.joinRoom = async (req, res) => {
+  const { userId } = req.body
+  const { id } = req.user
+  try {
+    // Buscamos si ya hay algún registro de conversación entre los dos usuarios y creamos uno nuevo si no existe
+    const conversation = await Message.findOneAndUpdate(
+      {
+        $or: [
+          { sender: id, receiver: userId },
+          { sender: userId, receiver: id },
+        ],
+      },
+      {
+        $setOnInsert: {
+          sender: id,
+          receiver: userId,
+          message: 'Hi!',
+          conversation: uuidv4(),
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    // Retornamos la sala (conversation) 
+    return res.json({ conversation: conversation.conversation, error:false })
+  } catch (error) {
+    console.error('Error en room:join', error);
     return res.json({ message: 'Ocurrió un error inseperado', error:true })
   }
 }

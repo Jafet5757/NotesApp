@@ -74,29 +74,8 @@ io.on('connection', (socket) => {
   socket.on('room:join', async (data) => {
     try {
       console.log('room:join', data);
-      // Buscamos si ya hay algún registro de conversación entre los dos usuarios y creamos uno nuevo si no existe
-      const conversation = await Message.findOneAndUpdate(
-        {
-          $or: [
-            { sender: data.id, receiver: data.userId },
-            { sender: data.userId, receiver: data.id },
-          ],
-        },
-        {
-          $setOnInsert: {
-            sender: data.id,
-            receiver: data.userId,
-            message: 'Hi!',
-            conversation: uuidv4(),
-          },
-        },
-        { upsert: true, new: true }
-      );
-
-      // Nos unimos a la sala
-      socket.join(conversation.conversation);
-      // Emitimos un evento para que el cliente sepa que se unió a la sala
-      socket.to(conversation.conversation).emit('room:joined', conversation.conversation);
+      socket.leaveAll();
+      socket.join(data.conversation);
     } catch (error) {
       console.error('Error en room:join', error);
     }
