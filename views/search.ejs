@@ -1,0 +1,57 @@
+<%- include('./partials/_header') %>
+<%- include('./partials/_nav', {login}) %>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md">
+      <h2 class="text-center mb-5 mt-3">Resultados de la busqueda en tus notas</h2>
+       <% for(note of notes){ %>
+        <div class="card note-card my-3">
+          <div class="card-header">
+            <h4><%= note.title %></h4>
+            <div class="tags">
+              <% note.tags.forEach(tag => { %>
+                <span class="badge <%= `bg-${tag.color}` %>"><%= tag.tag %></span>
+              <% }) %>
+            </div>
+          </div>
+          <div class="card-body">
+            <%= note.body %>
+          </div>
+          <div class="card-footer">
+          </div>
+        </div>
+      <% } %>
+    </div>
+    <div class="col-md">
+      <h2 class="text-center mb-5 mt-3">Resultados de la busqueda en la web</h2>
+      <% for(resultado of resultados){ %>
+        <div class="card note-card my-3">
+          <div class="card-header">
+            <h4><%= resultado.title %></h4>
+          </div>
+          <div class=" p-3">
+            <a href="<%=resultado.link%>" target="_blank"><%= resultado.link %></a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script>
+  //Esperamos a que el DOM este listo
+  document.addEventListener('DOMContentLoaded', () => {
+    // Extraemos todos los .card-body para que los detecte como html y no como texto
+    const cardBody = document.querySelectorAll('.card-body');
+    // Recorremos cada uno de los .card-body
+    cardBody.forEach((body) => {
+      // Extraemos el texto del .card-body
+      const text = body.textContent;
+      // Lo volvemos a insertar en su lugar pero con formato html
+      body.innerHTML = text;
+    });
+  });
+</script>
+
+<%- include('./partials/_footer') %>

@@ -29,9 +29,9 @@
               </li>  
             <% } %>
           </ul>
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
-            <button class="btn btn-purple" type="submit"><i class="bi bi-search"></i></button>
+          <form class="d-flex" role="search" method="get" action="/search">
+            <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" id="search-input" name="search">
+            <button class="btn btn-purple" type="submit" id="search-btn"><i class="bi bi-search"></i></button>
           </form>
         </div>
       </div>

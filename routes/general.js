@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const passport = require('passport')
 const actions = require('../controllers/session')
+const Search = require('../controllers/search')
 
 //Verifica si tene sesion activa
 const isAuthenticated = (req, res, next) => {
@@ -116,5 +117,7 @@ router.get('/profile', isAuthenticated, (req, res) => {
 })
 
 router.post('/changePassword', actions.changePassword)
+
+router.get('/search', Search.search)
 
 module.exports = router
