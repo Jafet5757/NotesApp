@@ -133,4 +133,6 @@ router.post('/update', isAuthenticated, actions.updateNote)
 
 router.get('/public', actions.getPublicNotes)
 
+router.get('/generateReport', isAuthenticated, actions.generateReport)
+
 module.exports = router

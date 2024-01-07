@@ -1,3 +1,5 @@
+const PDFDocument = require('pdfkit')
+const fs = require('fs');
 const Note = require('../db/models/note')
 const Tag = require('../db/models/tag')
 actions = {}
@@ -138,5 +140,60 @@ actions.getPublicNotes = async (req, res) => {
     return res.status(500).json({ message: 'Ocurrió un error', error:true })
   }
 }
+
+/**
+ * Genera un documento pdf de las notas del usuario
+ * @param {Object} req 
+ * @param {Object} res 
+ * @returns Documento pdf de todas las notas del usuario
+ */
+actions.generateReport = async (req, res) => {
+  try {
+    // Obtenemos todas las notas del usuario
+    const notes = await Note.find({ user: req.user.id }).sort({ date: 'desc' });
+
+    // Creamos el documento pdf
+    const doc = new PDFDocument();
+
+    // Escribimos en el documento
+    doc.fontSize(25).text('Reporte de notas', {
+      align: 'center'
+    });
+    doc.fontSize(15).text('Notas', {
+      align: 'left'
+    });
+
+    // Agregamos un salto de línea
+    doc.moveDown();
+
+    // Recorremos las notas
+    for (let note of notes) {
+      doc.text(`Titulo: ${note.title}`);
+      doc.text(`Cuerpo: ${note.body}`);
+      doc.text(`Fecha: ${note.date}`);
+      doc.text(`Publica: ${note.isPublic}`);
+      for(let tag of note.tags){
+        doc.text(`Etiqueta: ${tag.tag}`);
+      }
+      doc.moveDown();
+    }
+
+    // Finalizamos el documento
+    doc.end();
+
+    // Lo guardamos en la carpeta reports
+    doc.pipe(fs.createWriteStream(`reports/reporte_notas_${(new Date()).getTime()}.pdf`));
+
+    // Configuramos los encabezados para la descarga del archivo
+    res.setHeader('Content-Disposition', 'attachment; filename=reporte_notas.pdf');
+    res.setHeader('Content-Type', 'application/pdf');
+
+    // Enviamos el archivo al frontend
+    doc.pipe(res);
+  } catch (error) {
+    console.error('Error al generar el reporte:', error);
+    res.status(500).send('Error interno del servidor');
+  }
+};
 
 module.exports = actions
