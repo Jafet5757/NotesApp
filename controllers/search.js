@@ -4,6 +4,12 @@ const Note = require('../db/models/note')
 const marked = require('marked');
 const actions = {}
 
+/**
+ * Hace una busqueda de la palabra en la web y en la base de datos
+ * @param {Object} req search
+ * @param {Object} res 
+ * @returns resultados, notes, search, login
+ */
 actions.search = async(req, res) => {
   const { search } = req.query
   const id = req.user ? req.user.id : null
@@ -29,6 +35,11 @@ actions.search = async(req, res) => {
   
 }
 
+/**
+ * Hace una busqueda en la web
+ * @param {String} terminoBusqueda 
+ * @returns enlaces de la busqueda
+ */
 async function searchInWeb(terminoBusqueda) {
   try {
     // Realizar una solicitud HTTP a la página de búsqueda
@@ -63,6 +74,12 @@ async function searchInWeb(terminoBusqueda) {
   }
 }
 
+/**
+ * Hace una busqueda en la base de datos con regex
+ * @param {String} title palabra a buscar
+ * @param {String} id del usuario al que pertenece la nota
+ * @returns coincidencias de la busqueda
+ */
 async function searchNoteByTitle(title, id='') {
   try {
     // Buscamos donde sea privada y del usuario

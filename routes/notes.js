@@ -11,7 +11,7 @@ const isAuthenticated = (req, res, next) => {
 
 /**
  * @swagger
- * /api/get:
+ * /notes/get:
  *   post:
  *     summary: Obtener notas de un usuario
  *     description: Obtener las notas asociadas al ID de usuario proporcionado
@@ -41,7 +41,7 @@ router.post('/get',isAuthenticated, actions.getNotesFromAuser)
 
 /**
  * @swagger
- * /api/create:
+ * /notes/create:
  *   post:
  *     summary: Crea una nueva nota
  *     description: Crea una nueva nota utilizando el título y el cuerpo proporcionados
@@ -74,7 +74,7 @@ router.post('/create', isAuthenticated, actions.createNote)
 
 /**
  * @swagger
- * /api/delete:
+ * /notes/delete:
  *   post:
  *     summary: Elimina una nota
  *     description: Elimina una nota utilizando el ID proporcionado
@@ -104,7 +104,7 @@ router.post('/delete', isAuthenticated, actions.deleteNote)
 
 /**
  * @swagger
- * /api/update:
+ * /notes/update:
  *   post:
  *     summary: Actualiza una nota
  *     description: Actualiza una nota utilizando el ID proporcionado
@@ -131,8 +131,42 @@ router.post('/delete', isAuthenticated, actions.deleteNote)
  */
 router.post('/update', isAuthenticated, actions.updateNote)
 
+/**
+ * @swagger
+ * /notes/public:
+ *   get:
+ *     summary: Obtiene las notas publicas
+ *     description: Obtiene las notas publicas
+ *     tags:
+ *       - Notas
+ *     parameters:
+ *       - in: body
+ *     responses:
+ *       200:
+ *         description: Nota actualizada exitosamente
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error del servidor
+ */
 router.get('/public', actions.getPublicNotes)
 
+/**
+ * @swagger
+ * /notes/generateReport:
+ *  get:
+ *    summary: Genera un reporte de las notas del usuario
+ *    description: Genera un reporte de las notas del usuario que luego se descarga y guarda en el servidor
+ *    tags:
+ *      - Notas
+ *    responses:
+ *    200:
+ *      description: Reporte generado exitosamente
+ *    401:
+ *      description: No autorizado
+ *    500:
+ *      description: Error del servidor
+ */
 router.get('/generateReport', isAuthenticated, actions.generateReport)
 
 module.exports = router

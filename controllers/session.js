@@ -128,6 +128,12 @@ actions.recoverAccount = async (req, res) => {
   }
 }
 
+/**
+ * Verifica que el código de recuperación sea correcto y genera una nueva contraseña
+ * @param {Object} req email y código de recuperación
+ * @param {Object} res 
+ * @returns Validacion del código (token)
+ */
 actions.verifyCode = async (req, res) => { 
   const { email, code } = req.body
   
@@ -188,6 +194,12 @@ function generateNumbers() {
   return numbers
 }
 
+/**
+ * Cambia la contraseña del usuario
+ * @param {Object} req password, passwordConfirm
+ * @param {Object} res 
+ * @returns Mensaje de error o de éxito
+ */
 actions.changePassword = async (req, res) => { 
   const { password, passwordConfirm } = req.body
 

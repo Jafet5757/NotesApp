@@ -9,9 +9,11 @@ const actions = {}
  * @param {Object} res 
  * @returns Lista de usuarios
  */
-actions.getUsers = async(req, res) => {
+actions.getUsers = async (req, res) => {
+  const { id } = req.user
   try {
-    const users = await User.find({})
+    // Obtenemos todos los usuarios excepto el usuario logueado
+    const users = await User.find({ _id: { $ne: id } })
     return res.json({users, error:false})
   } catch (error) {
     console.error(error)
@@ -109,6 +111,12 @@ actions.joinRoom = async (req, res) => {
   }
 }
 
+/**
+ * Actualiza el campo read de los mensajes a true
+ * @param {Object} req id del usuario que tiene la conversación y userId del otro usuario
+ * @param {Object} res 
+ * @returns error en caso de que lo haya
+ */
 actions.readMessage = async (req, res) => {
   const { id, userId } = req.body
   try {
