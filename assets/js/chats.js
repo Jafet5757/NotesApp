@@ -112,6 +112,8 @@ function loadConversation(userId) {
       principalCard.scrollTop = principalCard.scrollHeight;
       // Nos unimos a la sala
       joinRoom(userId)
+      // Emitimos el leido a la sala
+      readEmit(true)
     })
     .catch(err => {
       console.error(err)
@@ -259,24 +261,25 @@ function emitMessage(message, userId) {
  * Actualizamos la base de datos para que el mensaje se marque como leido y emitimos el mensaje a la sala
  * @param {String} userId Id del usuario con el que se tiene la conversación 
  */
-function readEmit() {
+function readEmit(inBroadcast = false) {
   // Hacemos una peticion a /id para obtener el id del usuario logueado
   fetch('/id')
     .then(response => response.json())
-    .then(data => { 
+    .then(dataId => { 
+      console.log('message-read:id: ', dataId)
       fetch('/chat/message-read', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
         body: JSON.stringify({
-          id: data.id,
+          id: dataId.id,
           userId: document.getElementById('userId').value,
           conversation: sessionStorage.getItem('room')
       })
     })
       .then(response => response.json())
-      .then(data => {
+        .then(data => {
         // Si hay un error se muestra un mensaje
         if (data.error) {
           return Swal.fire({
@@ -286,7 +289,7 @@ function readEmit() {
           })
         }
         // Emitimos el mensaje a la sala
-        socket.emit('message:read', { conversation: sessionStorage.getItem('room'), userId: document.getElementById('userId').value })
+        socket.emit('message:read', { conversation: sessionStorage.getItem('room'), userId: document.getElementById('userId').value, id: dataId.id, inBroadcast })
       })
       .catch(err => {
         console.error(err)
@@ -339,16 +342,7 @@ socket.on('message:sent', (data) => {
  */
 socket.on('message:read', (data) => {
   console.log('message:read', data)
-  // Elimina el ultimo mensaje de leido
-  const readMessages = document.getElementsByClassName('read-message')
-  readMessages[readMessages.length - 1].remove()
-  // Agrega el mensaje a la lista
-  const messagesCard = document.getElementById('messages-card')
-  if(data.userId !== document.getElementById('userId').value) {
-    // Se agrega el leido al ultimo mensaje en verdadero a la derecha porque el mensaje lo envio el otro usuario
-    messagesCard.innerHTML += messageHasBeenRead(true, 'end')
-  } else {
-    // Se agrega el leido al ultimo mensaje en verdadero a la izquierda porque el mensaje lo envio el otro usuario
-    messagesCard.innerHTML += messageHasBeenRead(true, 'start')
-  }
+  // Leemos el último leido y lo ponemos en true
+  const read = document.getElementsByClassName('read-message')
+  read[read.length - 1].innerHTML = `<label for="" class="text-${read?'primary':'secondary'}"><i class="bi bi-check-all"></i></label>`
 })

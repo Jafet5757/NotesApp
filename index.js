@@ -90,9 +90,9 @@ io.on('connection', (socket) => {
 
   // Mensaje leido
   socket.on('message:read', async (data) => { 
-    console.log('message:read');
+    console.log('message:read', data);
     // Emitimos el mensaje a la sala excepto al usuario que lo envió
-    socket.broadcast.to(data.conversation).emit('message:read', data);
+    io.to(data.conversation).emit('message:read', data);
   });
 
 });
