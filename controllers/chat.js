@@ -109,4 +109,21 @@ actions.joinRoom = async (req, res) => {
   }
 }
 
+actions.readMessage = async (req, res) => {
+  const { id, userId } = req.body
+  try {
+    // Buscamos si ya hay algún registro donde el usuario logueado es el receptor y el otro usuario es el emisor y actualizamos el campo read a true
+    await Message.updateMany(
+      { sender: userId, receiver: id },
+      { $set: { read: true } }
+    );
+    
+    // Retornamos la sala (conversation) 
+    return res.json({ error:false })
+  } catch (error) {
+    console.error('Error en room:join', error);
+    return res.json({ message: 'Ocurrió un error inseperado', error:true })
+  }
+}
+
 module.exports = actions

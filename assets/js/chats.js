@@ -58,6 +58,13 @@ const otherUserMessage = (message) => {
             </div>
           </div>`}
 
+const messageHasBeenRead = (read, position) => {
+  // Agregamos el mensaje de leido
+  return `<div class="text-end read-message d-flex justify-content-${position}">
+            <label for="" class="text-${read?'primary':'secondary'}"><i class="bi bi-check-all"></i></label>
+          </div>`
+}
+
 /**
  * Se carga la conversacion del usuario logueado con el usuario que se le pasa como parametro
  * @param {String} userId Id del usuario con el que se quiere obtener la conversación
@@ -74,6 +81,7 @@ function loadConversation(userId) {
   })
     .then(response => response.json())
     .then(data => {
+      console.log(data)
       // Si hay un error se muestra un mensaje
       if (data.error) {
         return Swal.fire({
@@ -89,9 +97,13 @@ function loadConversation(userId) {
         // Si el mensaje es del usuario logueado lo agregamos a la derecha
         if (message.sender === data.users.id) {
           messagesCard.innerHTML += thisUserMessage(message.message)
+          // Si el mensaje fue leido agregamos el icono
+          messagesCard.innerHTML += messageHasBeenRead(message.read, 'end')
         } else {
           // Si el mensaje es del otro usuario lo agregamos a la izquierda
           messagesCard.innerHTML += otherUserMessage(message.message)
+          // Si el mensaje fue leido agregamos el icono
+          messagesCard.innerHTML += messageHasBeenRead(message.read, 'start')
         }
       })
       // Agregamos userId al input hidden
@@ -179,6 +191,8 @@ function sendMessage() {
         // Se agrega el mensaje a la lista
         const messagesCard = document.getElementById('messages-card')
         messagesCard.innerHTML += thisUserMessage(message)
+        // Se agrega el leido al ultimo mensaje
+        messagesCard.innerHTML += messageHasBeenRead(false, 'end')
         // Baja el scroll hasta el final
         principalCard.scrollTop = principalCard.scrollHeight;
         // Se limpia el input
@@ -241,6 +255,58 @@ function emitMessage(message, userId) {
     })
 }
 
+/**
+ * Actualizamos la base de datos para que el mensaje se marque como leido y emitimos el mensaje a la sala
+ * @param {String} userId Id del usuario con el que se tiene la conversación 
+ */
+function readEmit() {
+  // Hacemos una peticion a /id para obtener el id del usuario logueado
+  fetch('/id')
+    .then(response => response.json())
+    .then(data => { 
+      fetch('/chat/message-read', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+        body: JSON.stringify({
+          id: data.id,
+          userId: document.getElementById('userId').value,
+          conversation: sessionStorage.getItem('room')
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Si hay un error se muestra un mensaje
+        if (data.error) {
+          return Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: data.message
+          })
+        }
+        // Emitimos el mensaje a la sala
+        socket.emit('message:read', { conversation: sessionStorage.getItem('room'), userId: document.getElementById('userId').value })
+      })
+      .catch(err => {
+        console.error(err)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Algo salió mal al recibir el mensaje'
+        })
+      })
+      })
+    .catch(err => {
+      console.error(err)
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Algo salió mal al enviar el mensaje'
+      })
+    })
+}
+
 // Eventos del socket
 socket.on('room:joined', (room) => {
   console.log('room:joined', room)
@@ -248,6 +314,9 @@ socket.on('room:joined', (room) => {
   sessionStorage.setItem('room', room)
 })
 
+/**
+ * Recibe un mensaje de la sala y lo agrega a la lista
+ */
 socket.on('message:sent', (data) => { 
   console.log('message:sent', data)
   if(data.userId !== document.getElementById('userId').value) {
@@ -256,7 +325,30 @@ socket.on('message:sent', (data) => {
     messagesCard.innerHTML += otherUserMessage(data.message)
     // Baja el scroll hasta el final
     principalCard.scrollTop = principalCard.scrollHeight;
+    // Se agrega el leido al ultimo mensaje en verdadero porque el mensaje lo envio el otro usuario
+    messagesCard.innerHTML += messageHasBeenRead(true, 'start')
+    // Emitimos el leido a la sala
+    readEmit()
   } else {
     // No hace nada porque el mensaje ya se agregó (lo envió el usuario logueado)
+  }
+})
+
+/**
+ * Recibe el leido de la sala y lo agrega a la lista
+ */
+socket.on('message:read', (data) => {
+  console.log('message:read', data)
+  // Elimina el ultimo mensaje de leido
+  const readMessages = document.getElementsByClassName('read-message')
+  readMessages[readMessages.length - 1].remove()
+  // Agrega el mensaje a la lista
+  const messagesCard = document.getElementById('messages-card')
+  if(data.userId !== document.getElementById('userId').value) {
+    // Se agrega el leido al ultimo mensaje en verdadero a la derecha porque el mensaje lo envio el otro usuario
+    messagesCard.innerHTML += messageHasBeenRead(true, 'end')
+  } else {
+    // Se agrega el leido al ultimo mensaje en verdadero a la izquierda porque el mensaje lo envio el otro usuario
+    messagesCard.innerHTML += messageHasBeenRead(true, 'start')
   }
 })

@@ -88,6 +88,13 @@ io.on('connection', (socket) => {
     socket.broadcast.to(data.conversation).emit('message:sent', data);
   });
 
+  // Mensaje leido
+  socket.on('message:read', async (data) => { 
+    console.log('message:read');
+    // Emitimos el mensaje a la sala excepto al usuario que lo envió
+    socket.broadcast.to(data.conversation).emit('message:read', data);
+  });
+
 });
 
 server.listen(app.get('port'), () => {
