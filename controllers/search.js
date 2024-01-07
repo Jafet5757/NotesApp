@@ -32,29 +32,33 @@ actions.search = async(req, res) => {
 async function searchInWeb(terminoBusqueda) {
   try {
     // Realizar una solicitud HTTP a la página de búsqueda
-    const respuesta = await axios.get(`https://www.bing.com/search?q=${terminoBusqueda}`);
+    const respuesta = await axios.get(`https://search.brave.com/search?q=${terminoBusqueda}`);
 
     // Cargar el HTML de la página en Cheerio
     const $ = cheerio.load(respuesta.data);
 
     // Extraer información utilizando selectores de Cheerio
     const resultados = [];
-    $('h2').each((index, elemento) => {
+    $('a').each((index, elemento) => {
       // Agregar el texto de cada elemento encontrado al arreglo de resultados
-      const title = $(elemento).text()
-      // Obtenemos el enlace del elemento que es la etiqueta <a> hijo
-      // del elemento <h2> actual
-      const link = $(elemento).children().attr('href');
+      const title = $(elemento).children().children().text();
+      console.log(elemento)
+
+      const link = $(elemento).attr('href');
       resultados.push({ title, link });
     });
     
-    // Eliminamos las busquedas donde no haya link
-    const filteredResult = resultados.filter(result => result.link !== undefined)
+    // Eliminamos las busquedas donde no haya titulo o el lonk sea de Brave
+    const filteredResult = resultados.filter(result => {
+      return result.title && result.link.indexOf('brave.com') === -1
+    })
+
+    console.log('Search: ',filteredResult)
 
     // Devolver los resultados
     return filteredResult;
   } catch (error) {
-    console.error('Error al realizar la búsqueda:', error.message);
+    console.error('Error al realizar la búsqueda:',filter);
     return [];
   }
 }
