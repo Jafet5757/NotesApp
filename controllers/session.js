@@ -118,6 +118,11 @@ actions.recoverAccount = async (req, res) => {
         error: false,
         message: 'Correo enviado'
       })
+    }else{
+      return res.json({
+        error: true,
+        message: 'El correo no existe'
+      })
     }
   } catch (err) {
     console.error(err)
