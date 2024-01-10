@@ -63,7 +63,7 @@ createNoteButton.addEventListener('click', () => {
   const isPublic = document.querySelector('#isPublicCreate').checked;
   const tags = document.querySelector('#tags').value;
   //validamos los campos
-  if(!title || !body || !tags){
+  if(!title || !body){
     return Swal.fire({
       icon: 'error',
       title: 'Oops...',

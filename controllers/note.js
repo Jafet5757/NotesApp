@@ -2,6 +2,8 @@ const PDFDocument = require('pdfkit')
 const fs = require('fs');
 const Note = require('../db/models/note')
 const Tag = require('../db/models/tag')
+// Expresion regular para validar que el body no lleve los simbolos < y >
+const regexBody = /<|>/g
 actions = {}
 
 /**
@@ -29,6 +31,10 @@ actions.getNotesFromAuser = async (req, res) => {
 actions.createNote = async (req, res) => {
   const { title, body, isPublic, tags } = req.body
   try {
+    //Verificamos que el titulo y el cuerpo no contengan los simbolos < y >
+    if(regexBody.test(title) || regexBody.test(body)){
+      return res.status(400).json({ message: 'la nota no puede llevar < o >', error:true })
+    }
     //Separamos la cadena tags en un array separado por comas
     const tagsArray = tags.split(',')
     const tagsIds = []
@@ -101,6 +107,10 @@ actions.updateNote = async (req, res) => {
     //Verificamos que la nota exista y pertenezca al usuario
     if(!note || note.user != userId){
       return res.status(404).json({ message: 'Note not found', error:true })
+    }
+    //Verificamos que el titulo y el cuerpo no contengan los simbolos < y >
+    if (regexBody.test(title) || regexBody.test(body)) {
+      return res.status(400).json({ message: 'la nota no puede llevar < o >', error:true })
     }
     //Eliminamos las etiquetas de esa nota
     const del = await Tag.deleteMany({ _id: { $in: note.tags } })
