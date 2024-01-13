@@ -53,10 +53,12 @@ actions.getMessages = async (req, res) => {
 actions.sendMessage = async (req, res) => { 
   const { userId, message } = req.body
   const { id } = req.user
+  // expresion regular para no admitir html
+  const regex = /<|>/g
   try {
     // Verificamos que el mensaje no esté vacio
-    if (!message) {
-      return res.json({ message: 'El mensaje no es válido', error:true })
+    if (!message || regex.test(message)) {
+      return res.status(400).json({ message: 'El mensaje no puede estar vacio', error:true })
     }
     // Buscamos si ya hay algún registro de conversación entre los dos usuarios
     const conversation = await Message.findOne({

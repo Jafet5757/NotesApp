@@ -178,6 +178,15 @@ function sendMessage() {
   const userId = document.getElementById('userId').value
   console.log('sendMessage')
   const message = document.getElementById('text-messageToSend').value
+  regex = /<|>/g
+  // Verificamos que el mensaje no esté vacio
+  if (!message || regex.test(message)) {
+    return Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'El mensaje no es válido'
+    })
+  }
   // Hacemos una peticion fetch para enviar el mensaje
   fetch('/chat/send-message', {
     method: 'POST',

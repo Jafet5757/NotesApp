@@ -14,12 +14,14 @@ const SECRET_KEY = '^Gm^j!a!Wr$6cG6f5UnchKS'
  */
 actions.register = async (req, res) => {
   const { email, username, password } = req.body
+  // Expresión regular para validar el email
+  const regex = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/gi
   
   // Validamos que los campos no estén vacíos
-  if (!email || !username || !password) {
+  if (!email || !username || !password || !regex.test(email)) {
     return res.json({
       error: true,
-      message: 'Todos los campos son requeridos'
+      message: 'Los datos son incorrectos'
     })
   }
   // Validamos que el usuario no exista
