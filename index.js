@@ -60,6 +60,12 @@ app.use('/', generalRoutes)
 app.use('/notes', notes)
 app.use('/chat', chat)
 
+// Middleware para manejar el error 404 (Not Found)
+app.use((req, res, next) => {
+  res.status(404).render('error', { code: '404', message: 'Página no encontrada' });
+});
+
+
 // Base de datos para el socket
 const Message = require('./db/models/message')
 

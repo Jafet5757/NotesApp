@@ -1,0 +1,23 @@
+<%- include('./partials/_header') %>
+
+  <%- include('./partials/_nav', {login:false}) %>
+
+    <div class="container my-5">
+      <div class="row text-center">
+        <div class="col-md">
+          <h2>Error <%= code %></h2>
+        </div>
+      </div>
+      <div class="row my-5">
+        <div class="col-md d-flex justify-content-center">
+          <img src="/img/error.png" alt="error" style="height: 20rem;">
+        </div>
+      </div>
+      <div class="row text-center">
+        <div class="col-md">
+          <h3><%= message %></h3>
+        </div>
+      </div>
+    </div>
+  
+<%- include('./partials/_footer') %>
