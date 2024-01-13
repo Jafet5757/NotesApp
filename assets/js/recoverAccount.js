@@ -1,5 +1,6 @@
 const verifyButton = document.getElementById('verify-button');
 const sendCodeButton = document.getElementById('sendCode-button');
+const openModalButton = document.getElementById('openModal');
 
 sendCodeButton.addEventListener('click', () => { 
   const email = document.getElementById('email').value;
@@ -26,6 +27,8 @@ sendCodeButton.addEventListener('click', () => {
         title: 'Éxito',
         text: data.message
       })
+      // Abrimos el modal
+      openModalButton.click();
     })
     .catch(err => {
       console.log(err)
